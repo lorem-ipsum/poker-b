@@ -59,6 +59,8 @@ class PlayerB : public QMainWindow {
 
   void displayGiveUpInfo(int n);
 
+  bool checkIfGameOver();
+
  private:
   QPushButton *buttonStartRequesting;
   // 连接

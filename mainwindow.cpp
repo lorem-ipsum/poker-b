@@ -103,13 +103,15 @@ void PlayerB::socketReadDataFromA() {
   QString someOneHasPushedCards =
       readFromBuffer(buffer, "someOneHasPushedCards");
   if (!someOneHasPushedCards.isEmpty()) {
-    lastPushCardPerson_ = 0;
     cardsOnTable_ = stringToIntArray(someOneHasPushedCards);
+    lastPushCardPerson_ = cardsOnTable_.back();
 
-    updateCardNumber(cardsOnTable_.back(), cardsOnTable_.size() - 1);
+    updateCardNumber(lastPushCardPerson_, cardsOnTable_.size() - 1);
     cardsOnTable_.pop_back();
 
     showTableOnSelfScreen(cardsOnTable_);
+
+    if (checkIfGameOver()) return;
   }
 
   QString chuOrBuchu = readFromBuffer(buffer, "chuOrBuchu");
@@ -123,11 +125,11 @@ void PlayerB::socketReadDataFromA() {
     displayGiveUpInfo(someOneHasJustGivenUp.toInt());
   }
 
-  QString landlordWins = readFromBuffer(buffer, "gameOver");
-  if (!landlordWins.isEmpty()) {
-    showWinOrLoseInfo(landlordWins == "true");
-    showRestartOrExitBtnsOnSelfScreen();
-  }
+  // QString landlordWins = readFromBuffer(buffer, "gameOver");
+  // if (!landlordWins.isEmpty()) {
+  //   showWinOrLoseInfo(landlordWins == "true");
+  //   showRestartOrExitBtnsOnSelfScreen();
+  // }
 }
 void PlayerB::socketDisconnectedFromA() {}
 
@@ -274,14 +276,17 @@ void PlayerB::showChuOrBuchuBtns() {
       lastPushCardPerson_ = 1;
       cardsOnTable_ = cardsToPush;
       showTableOnSelfScreen(cardsOnTable_);
-      if (cardsOfB_.isEmpty()) {
-        showWinOrLoseInfo(true);
-        sleep(50);
-        qDebug() << "B is casting to A that B has won!!!!!!!!!!!!!!!!!!!!";
-        castToA("gameOver", landlord_ == 1 ? "true" : "false");
-        showRestartOrExitBtnsOnSelfScreen();
-        return;
-      }
+
+      if (checkIfGameOver()) return;
+
+      // if (cardsOfB_.isEmpty()) {
+      //   showWinOrLoseInfo(true);
+      //   sleep(50);
+      //   qDebug() << "B is casting to A that B has won!!!!!!!!!!!!!!!!!!!!";
+      //   castToA("gameOver", landlord_ == 1 ? "true" : "false");
+      //   showRestartOrExitBtnsOnSelfScreen();
+      //   return;
+      // }
     }
   });
   connect(buchuBtn, &QPushButton::clicked, [=]() {
@@ -344,4 +349,15 @@ void PlayerB::showWinOrLoseInfo(bool win) {
   winOrLoseLabel->setGeometry(200, 50, 800, 400);
   winOrLoseLabel->setFont(QFont("Helvetica", 48));
   winOrLoseLabel->show();
+}
+
+bool PlayerB::checkIfGameOver() {
+  for (int i = 0; i < cardsNum_.size(); ++i) {
+    if (cardsNum_[i] == 0) {
+      showWinOrLoseInfo((landlord_ == i) == (landlord_ == 1));
+      showRestartOrExitBtnsOnSelfScreen();
+      return true;
+    }
+  }
+  return false;
 }
