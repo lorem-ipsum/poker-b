@@ -2,12 +2,15 @@
 #define MAINWINDOW_H
 
 #include <QJsonDocument>
+#include <QLabel>
 #include <QList>
 #include <QMainWindow>
 #include <QPushButton>
 #include <QString>
 #include <QtNetwork>
 
+#include "cardlabel.h"
+#include "cards.h"
 class PlayerB : public QMainWindow {
   Q_OBJECT
 
@@ -45,24 +48,62 @@ class PlayerB : public QMainWindow {
     socketToA_->write(dataArray);
   }
 
+  void setLandlord(int n) { landlord_ = n; }
+  void displayCommonCards(QList<int>);
+
+  void tellAPushedCards();
+
+  void notifyAThatBHasJustPushedCards(QList<int>);
+
+  void tellAGiveUp();
+
+  void displayGiveUpInfo(int n);
+
  private:
-  QPushButton *buttonStartListeningAndRequesting;
+  QPushButton *buttonStartRequesting;
   // 连接
   bool connectedToA_ = false;
   QTcpSocket *socketToA_ = nullptr;
   const int portA_ = 10080;
 
   QList<int> cardsOfB_;
-
+  QList<int> comcards_;
+  QList<int> cardsOnTable_;
   // 出牌顺序是...->A->B->C->A->...
   // 地主为A：0，B：1，C：2
   int landlord_ = 0;
   int personIndexToPosition_[3] = {2, 0, 1};
 
+  QList<CardLabel *> cardLabels_;
+  QList<CardLabel *> tableCardLabels_;
+
   void displayCards();
+  void showTableOnSelfScreen(QList<int>);
+
+  QList<int> stringToIntArray(QString str) {
+    QList<int> l;
+    for (QString str : str.split(".")) {
+      if (!str.isEmpty()) {
+        l.append(str.toInt());
+      }
+    }
+    return l;
+  }
+  QString intArrayToString(QList<int> list) {
+    QString str;
+    for (int i = 0; i < list.size(); ++i) {
+      str.push_back(QString::number(list[i]));
+      str.push_back('.');
+    }
+    return str;
+  }
+
+  void showChuOrBuchuBtns();
+
+  int lastPushCardPerson_ = 0;
 
  public slots:
-  void startListeningAndRequesting();
+  void startRequesting();
 
   void socketReadDataFromA();
   void socketDisconnectedFromA();
