@@ -18,7 +18,13 @@ class PlayerB : public QMainWindow {
   PlayerB(QWidget *parent = nullptr);
   ~PlayerB();
 
+  void restart();
+
   void initGiveUpInfoLabels();
+
+  void initDizhuNongminLabels();
+
+  void initBuhefaLabel();
 
   template <typename QBA, typename Str>
   QString readFromBuffer(QBA buffer, Str key) {
@@ -112,6 +118,9 @@ class PlayerB : public QMainWindow {
 
   QList<QLabel *> jiaoORbujiaoLabels_;
   QList<QLabel *> giveupInfoLabels_;
+  QList<QLabel *> dizhuNongminLabels_;
+  QList<QLabel *> commonCardLabels_;
+  QLabel *buhefaLabel_;
 
   void showChuOrBuchuBtns();
 
@@ -129,6 +138,11 @@ class PlayerB : public QMainWindow {
     cardsNumLabel_[personIndexToPosition_[n]]->setText(
         QString::number(cardsNum_[n]));
   }
+
+  // Components used when gameover
+  QLabel *winOrLoseLabel_;
+  QPushButton *restartBtn_;
+  QPushButton *exitBtn_;
 
  public slots:
   void startRequesting();
