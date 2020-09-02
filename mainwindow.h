@@ -18,6 +18,8 @@ class PlayerB : public QMainWindow {
   PlayerB(QWidget *parent = nullptr);
   ~PlayerB();
 
+  void initGiveUpInfoLabels();
+
   template <typename QBA, typename Str>
   QString readFromBuffer(QBA buffer, Str key) {
     qDebug() << "buffer:" << buffer;
@@ -84,7 +86,6 @@ class PlayerB : public QMainWindow {
   void showTableOnSelfScreen(const QList<int> &);
 
   void sleep(int t) {
-    t = 10;
     QTime time;
     time.start();
     while (time.elapsed() < t)            //等待时间流逝50ms

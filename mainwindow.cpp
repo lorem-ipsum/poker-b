@@ -16,9 +16,24 @@ PlayerB::PlayerB(QWidget* parent) : QMainWindow(parent) {
   buttonStartRequesting->setText("Start connecting...");
   connect(buttonStartRequesting, SIGNAL(clicked()), this,
           SLOT(startRequesting()));
+
+  initGiveUpInfoLabels();
 }
 
 PlayerB::~PlayerB() {}
+
+void PlayerB::initGiveUpInfoLabels() {
+  for (int i = 0; i < 3; ++i) {
+    QLabel* giveupLabel = new QLabel(this);
+    giveupLabel->setText("不出");
+    giveupInfoLabels_.append(giveupLabel);
+    giveupInfoLabels_[i]->hide();
+  }
+
+  giveupInfoLabels_[0]->setGeometry(580, 400, 40, 32);
+  giveupInfoLabels_[1]->setGeometry(160, 200, 40, 32);
+  giveupInfoLabels_[2]->setGeometry(960, 200, 40, 32);
+}
 
 void PlayerB::startRequesting() {
   socketToA_ = new QTcpSocket();
@@ -105,6 +120,8 @@ void PlayerB::socketReadDataFromA() {
   if (!someOneHasPushedCards.isEmpty()) {
     cardsOnTable_ = stringToIntArray(someOneHasPushedCards);
     lastPushCardPerson_ = cardsOnTable_.back();
+
+    giveupInfoLabels_[personIndexToPosition_[lastPushCardPerson_]]->hide();
 
     updateCardNumber(lastPushCardPerson_, cardsOnTable_.size() - 1);
     cardsOnTable_.pop_back();
@@ -278,15 +295,6 @@ void PlayerB::showChuOrBuchuBtns() {
       showTableOnSelfScreen(cardsOnTable_);
 
       if (checkIfGameOver()) return;
-
-      // if (cardsOfB_.isEmpty()) {
-      //   showWinOrLoseInfo(true);
-      //   sleep(50);
-      //   qDebug() << "B is casting to A that B has won!!!!!!!!!!!!!!!!!!!!";
-      //   castToA("gameOver", landlord_ == 1 ? "true" : "false");
-      //   showRestartOrExitBtnsOnSelfScreen();
-      //   return;
-      // }
     }
   });
   connect(buchuBtn, &QPushButton::clicked, [=]() {
@@ -304,25 +312,7 @@ void PlayerB::notifyAThatBHasJustPushedCards(const QList<int>& BPushedCards) {
 void PlayerB::tellAGiveUp() { castToA("BHasGivenUp", "info"); }
 
 void PlayerB::displayGiveUpInfo(int n) {
-  int personPosition = personIndexToPosition_[n];
-
-  if (giveupInfoLabels_.size() < 3) {
-    for (int i = 0; i < 3; ++i) {
-      QLabel* giveupLabel = new QLabel(this);
-      giveupLabel->setText("不出");
-      giveupInfoLabels_.append(giveupLabel);
-    }
-  }
-
-  if (personPosition == 0) {
-    giveupInfoLabels_[personPosition]->setGeometry(580, 400, 40, 32);
-  } else if (personPosition == 1) {
-    giveupInfoLabels_[personPosition]->setGeometry(160, 200, 40, 32);
-  } else if (personPosition == 2) {
-    giveupInfoLabels_[personPosition]->setGeometry(960, 200, 40, 32);
-  }
-
-  giveupInfoLabels_[personPosition]->show();
+  giveupInfoLabels_[personIndexToPosition_[n]]->show();
 }
 
 void PlayerB::showRestartOrExitBtnsOnSelfScreen() {
