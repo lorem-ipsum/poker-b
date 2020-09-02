@@ -204,7 +204,9 @@ void PlayerB::showChuOrBuchuBtns() {
   connect(buchuBtn, SIGNAL(clicked()), buchuBtn, SLOT(hide()));
 
   buchuBtn->setDisabled(lastPushCardPerson_ == 1);
-
+  if (lastPushCardPerson_ == 1) {
+    cardsOnTable_ = {};
+  }
   // btn connect
   connect(chuBtn, &QPushButton::clicked, [=]() {
     // lastPushCardPerson_ = 1;
@@ -223,6 +225,12 @@ void PlayerB::showChuOrBuchuBtns() {
     qDebug() << "CHECKING...1";
     if (CARDS_CMP(cardsToPush, cardsOnTable_)) {
       qDebug() << "CHECKING...2";
+
+      // B不再展示出掉的牌
+      for (int i = 0; i < cardsToPush.size(); ++i) {
+        cardsOfB_.removeOne(cardsToPush[i]);
+      }
+      displayCards();
 
       notifyAThatBHasJustPushedCards(cardsToPush);
       lastPushCardPerson_ = 1;
