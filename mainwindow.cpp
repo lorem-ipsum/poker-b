@@ -59,7 +59,7 @@ void PlayerB::initGiveUpInfoLabels() {
     giveupInfoLabels_[i]->hide();
   }
 
-  giveupInfoLabels_[0]->setGeometry(580, 400, 40, 32);
+  giveupInfoLabels_[0]->setGeometry(580, 440, 40, 32);
   giveupInfoLabels_[1]->setGeometry(160, 200, 40, 32);
   giveupInfoLabels_[2]->setGeometry(960, 200, 40, 32);
 }
@@ -222,8 +222,8 @@ void PlayerB::showDoYouWantToCampaignButtons() {
   QPushButton* yesBtn = new QPushButton(this);
   QPushButton* noBtn = new QPushButton(this);
 
-  yesBtn->setText("Yes");
-  noBtn->setText("No");
+  yesBtn->setText("叫地主");
+  noBtn->setText("不叫");
   yesBtn->setGeometry(120, 500, 50, 50);
   noBtn->setGeometry(180, 500, 50, 50);
   yesBtn->show();
@@ -332,6 +332,7 @@ void PlayerB::showChuOrBuchuBtns() {
     qDebug() << "CHECKING...1";
     if (CARDS_CMP(cardsToPush, cardsOnTable_)) {
       qDebug() << "CHECKING...2";
+      giveupInfoLabels_[personIndexToPosition_[1]]->hide();
       buhefaLabel_->hide();
       updateCardNumber(1, cardsToPush.size());
 
@@ -355,6 +356,7 @@ void PlayerB::showChuOrBuchuBtns() {
     }
   });
   connect(buchuBtn, &QPushButton::clicked, [=]() {
+    displayGiveUpInfo(1);
     buhefaLabel_->hide();
     chuBtn->hide();
     buchuBtn->hide();
