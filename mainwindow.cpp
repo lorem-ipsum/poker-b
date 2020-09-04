@@ -33,18 +33,18 @@ void PlayerB::restart() {
 
   cardsOfB_.clear();
   comcards_.clear();
-  for (auto* i : commonCardLabels_) i->hide();
+  for (auto* i : commonCardLabels_) delete i;
   commonCardLabels_.clear();
   cardsOnTable_.clear();
   landlord_ = 0;
-  for (auto* i : cardLabels_) i->hide();
+  for (auto* i : cardLabels_) delete i;
   cardLabels_.clear();
-  for (auto* i : tableCardLabels_) i->hide();
+  for (auto* i : tableCardLabels_) delete i;
   tableCardLabels_.clear();
   jiaoORbujiaoLabels_.clear();
   lastPushCardPerson_ = 0;
   cardsNum_.clear();
-  for (auto* i : cardsNumLabel_) i->hide();
+  for (auto* i : cardsNumLabel_) delete i;
   cardsNumLabel_.clear();
 
   for (auto* i : dizhuNongminLabels_) i->hide();
@@ -121,6 +121,7 @@ void PlayerB::socketReadDataFromA() {
 
   QString commonCardsStr = readFromBuffer(buffer, "commonCards");
   if (!commonCardsStr.isEmpty()) {
+    comcards_.clear();
     buttonStartRequesting->hide();
     for (QString str : commonCardsStr.split(".")) {
       if (!str.isEmpty()) {
@@ -245,7 +246,7 @@ void PlayerB::showDoYouWantToCampaignButtons() {
 void PlayerB::displayCards() {
   // 先删除之前的卡
   for (QLabel* item : cardLabels_) {
-    item->hide();
+    delete item;
   }
   cardLabels_.clear();
 
@@ -264,6 +265,8 @@ void PlayerB::displayCards() {
 }
 
 void PlayerB::displayCommonCards(const QList<int>& commonCards) {
+  for (auto* i : commonCardLabels_) delete i;
+  commonCardLabels_.clear();
   for (int i = 0; i < commonCards.size(); ++i) {
     QLabel* cardLabel = new QLabel(this);
     commonCardLabels_.append(cardLabel);
@@ -280,7 +283,7 @@ void PlayerB::displayCommonCards(const QList<int>& commonCards) {
 void PlayerB::showTableOnSelfScreen(const QList<int>&) {
   // 先删除之前的卡
   for (QLabel* item : tableCardLabels_) {
-    item->hide();
+    delete item;
   }
   tableCardLabels_.clear();
 
